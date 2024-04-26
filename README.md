@@ -1,6 +1,7 @@
 
-# Zing
-## Connect instantly, share everything.
+# Zing - Connect instantly, share everything.
+
+Zing is a lightning-fast and fun way to connect with friends and family in real-time. Our instant messaging platform lets you exchange messages, share photos and videos, and stay connected anytime, anywhere.
 
 ## Install packages
 ```bash
