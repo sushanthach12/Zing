@@ -47,6 +47,7 @@ const AuthForm: FC<AuthFormProps> = ({ }) => {
             if (variant === "REGISTER") {
                 await axios.post("/api/register", data);
                 toast.success("Registration successful!");
+                router.replace('/users')
             }
 
             if (variant === "LOGIN") {
@@ -61,6 +62,7 @@ const AuthForm: FC<AuthFormProps> = ({ }) => {
 
                         if (callback?.ok && !callback.error) {
                             toast.success("Login successful!");
+                            router.replace('/users')
                         }
                     })
             }
