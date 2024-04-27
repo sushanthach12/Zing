@@ -3,10 +3,14 @@
 import { FC, useCallback, useState } from "react"
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { BsGithub, BsGoogle } from "react-icons/bs";
+import axios, { Axios, AxiosError } from "axios";
 
 import Input from "@/components/ui/input";
 import Button from "@/components/ui/button";
 import AuthSocialButton from "./auth-social-button";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { signIn } from "next-auth/react";
 
 interface AuthFormProps { }
 
@@ -16,6 +20,8 @@ const AuthForm: FC<AuthFormProps> = ({ }) => {
 
     const [variant, setVariant] = useState<Variant>("LOGIN");
     const [isLoading, setIsLoading] = useState(false);
+
+    const router = useRouter();
 
     const toggleVariant = useCallback(() => {
         setVariant(variant === "LOGIN" ? "REGISTER" : "LOGIN");
@@ -35,24 +41,75 @@ const AuthForm: FC<AuthFormProps> = ({ }) => {
 
 
     const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-        setIsLoading(true);
+        try {
+            setIsLoading(true);
 
-        if (variant === "LOGIN") {
-            // NextAuth Sign
-        } else {
-            // Axios Register
+            if (variant === "REGISTER") {
+                await axios.post("/api/register", data);
+                toast.success("Registration successful!");
+            }
+
+            if (variant === "LOGIN") {
+                signIn("credentials", {
+                    redirect: false,
+                    ...data,
+                })
+                    .then((callback) => {
+                        if (callback?.error) {
+                            toast.error(callback.error);
+                        }
+
+                        if (callback?.ok && !callback.error) {
+                            toast.success("Login successful!");
+                        }
+                    })
+            }
+
+            router.refresh();
+
+        } catch (error: any) {
+            if (error instanceof AxiosError) {
+                toast.error(error.response?.data)
+                console.log(error.response?.data)
+            }
+
+            if (error instanceof Error) {
+                toast.error(error.message);
+            }
+        } finally {
+            setIsLoading(false);
         }
 
-        setIsLoading(false);
     }
 
 
-    const socialActions = (action: string) => {
-        setIsLoading(true);
+    const socialActions = async (action: "github" | "google") => {
+        try {
+            setIsLoading(true);
 
-        // NextAuth Signin Social
+            signIn(action,{ redirect: false })
+            .then((callback) => {
+                if (callback?.error) {
+                    toast.error(callback.error);
+                }
 
-        setIsLoading(false);
+                if (callback?.ok && !callback.error) {
+                    toast.success("Login successful!");
+                }
+            })
+
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                toast.error(error.response?.data)
+                console.log(error.response?.data)
+            }
+
+            if (error instanceof Error) {
+                toast.error(error.message);
+            }
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     return <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
@@ -69,6 +126,7 @@ const AuthForm: FC<AuthFormProps> = ({ }) => {
                             type="text"
                             register={register}
                             errors={errors}
+                            disabled={isLoading}
                         />
                     )
                 }
@@ -79,6 +137,8 @@ const AuthForm: FC<AuthFormProps> = ({ }) => {
                     type="email"
                     register={register}
                     errors={errors}
+                    disabled={isLoading}
+
                 />
 
                 <Input
@@ -87,6 +147,7 @@ const AuthForm: FC<AuthFormProps> = ({ }) => {
                     type="password"
                     register={register}
                     errors={errors}
+                    disabled={isLoading}
                 />
 
                 <div>
@@ -114,8 +175,8 @@ const AuthForm: FC<AuthFormProps> = ({ }) => {
                 </div>
 
                 <div className="mt-6 flex gap-2">
-                    <AuthSocialButton icon={BsGithub} onClick={() => socialActions("github")}/>
-                    <AuthSocialButton icon={BsGoogle} onClick={() => socialActions("google")}/>
+                    <AuthSocialButton icon={BsGithub} onClick={() => socialActions("github")} />
+                    <AuthSocialButton icon={BsGoogle} onClick={() => socialActions("google")} />
                 </div>
             </div>
 
