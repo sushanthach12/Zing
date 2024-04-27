@@ -10,7 +10,7 @@ export default withAuth(
         const isAuth = await getToken({ req })
         const isLoginPage = pathname === '/'
 
-        const sensitiveRoutes = ['/users']
+        const sensitiveRoutes = ['/', '/users', '/conversations']
         const isAccessingSensitiveRoute = sensitiveRoutes.some((route) =>
             pathname.startsWith(route)
         )
@@ -37,12 +37,9 @@ export default withAuth(
                 return true
             },
         },
-        pages: {
-            signIn: '/'
-        }
     },
 )
 
 export const config = {
-    matchter: ['/', '/users', '/users/:path*'],
+    matchter: ['/', '/users/:path*', '/conversations/:path*'],
 }
