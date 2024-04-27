@@ -177,7 +177,7 @@ const AuthForm: FC<AuthFormProps> = ({ }) => {
                 </div>
 
                 <div className="mt-6 flex gap-2">
-                    <AuthSocialButton icon={BsGithub} onClick={() => socialActions("github")} />
+                    {/* <AuthSocialButton icon={BsGithub} onClick={() => socialActions("github")} /> */}
                     <AuthSocialButton icon={BsGoogle} onClick={() => socialActions("google")} />
                 </div>
             </div>
