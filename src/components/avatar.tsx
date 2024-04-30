@@ -20,7 +20,7 @@ const Avatar: FC<AvatarProps> = ({ user }) => {
             <Image
                 fill
                 alt="Profile picture"
-                src={user?.image ?? "/placeholder.jpg"}
+                src={user?.image ?? "/images/placeholder.jpg"}
             />
         </div>
         {

@@ -97,7 +97,7 @@ const SettingsModal: FC<SettingsModalProps> = ({ currentUser, isOpen, onClose })
                                 </label>
                                 <div className="mt-2 flex items-center gap-x-3">
                                     <Image
-                                        src={image || currentUser?.image || "/placeholder.jpg"}
+                                        src={image || currentUser?.image || "/images/placeholder.jpg"}
                                         alt="Profile Image"
                                         width={48}
                                         height={48}
