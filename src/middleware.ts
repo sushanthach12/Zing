@@ -43,5 +43,5 @@ export default withAuth(
 )
 
 export const config = {
-    matchter: ['/((?!api|_next/static|_next/image|favicon.ico|/images).*)', '/', '/users/:path*', '/conversations/:path*'],
+    matchter: ['/((?!api|_next/static|_next/image|.*\\.png$).*)', '/', '/users/:path*', '/conversations/:path*'],
 }
