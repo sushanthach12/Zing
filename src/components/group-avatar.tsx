@@ -29,7 +29,7 @@ const GroupAvatar: FC<GroupAvatarProps> = ({ users = [] }) => {
                         className={`absolute inline-block overflow-hidden h-[21px] w-[21px] rounded-full ${positionMap[index as keyof typeof positionMap]}`}
                     >
                         <Image
-                            src={user.image || "/images/placeholders.jpg"}
+                            src={user.image || "/placeholders.jpg"}
                             alt={"Avatar"}
                             fill
                             className="rounded-full"
