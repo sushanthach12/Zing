@@ -9,6 +9,7 @@ import { Conversation, User } from "@prisma/client";
 import useOtherUser from "@/hooks/use-other-user";
 import Avatar from "@/components/avatar";
 import ConfirmModal from "@/app/(routes)/conversations/[conversationId]/_components/confirm-modal";
+import GroupAvatar from "@/components/group-avatar";
 
 interface ProfileDrawerProps {
     data: Conversation & { users: User[] };
@@ -90,7 +91,13 @@ const ProfileDrawer: FC<ProfileDrawerProps> = ({ data, isOpen, onClose }) => {
                                             <div className="relative mt-6 flex-1 px-4 sm:px-6">
                                                 <div className="flex flex-col items-center">
                                                     <div className="mb-2">
-                                                        <Avatar user={otherUser} />
+                                                        {
+                                                            data.isGroup ? (
+                                                                <GroupAvatar users={data.users} />
+                                                            ) : (
+                                                                <Avatar user={otherUser} />
+                                                            )
+                                                        }
                                                     </div>
 
                                                     <div className="">
@@ -120,6 +127,22 @@ const ProfileDrawer: FC<ProfileDrawerProps> = ({ data, isOpen, onClose }) => {
 
                                                     <div className="w-full pb-5 pt-5 sm:px-0 sm:pt-0">
                                                         <dl className="space-y-8 px-4 sm:space-y-6 sm:px-6">
+                                                            {
+                                                                data.isGroup && (
+                                                                    <div>
+                                                                        <dd className="text-sm font-medium text-gray-500 sm:w-40 md:flex-shrink-0">
+                                                                            Emails
+                                                                        </dd>
+
+                                                                        <dt className="mt-1 text-sm text-gray-900 sm:col-span-2">
+                                                                            {
+                                                                                data.users.map((user) => user.email).join(" ")
+                                                                            }
+                                                                        </dt>
+                                                                    </div>
+                                                                )
+                                                            }
+
                                                             {
                                                                 !data.isGroup && (
                                                                     <div>
@@ -152,6 +175,7 @@ const ProfileDrawer: FC<ProfileDrawerProps> = ({ data, isOpen, onClose }) => {
                                                                     </>
                                                                 )
                                                             }
+
                                                         </dl>
                                                     </div>
                                                 </div>

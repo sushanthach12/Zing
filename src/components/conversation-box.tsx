@@ -10,6 +10,7 @@ import { FullConversationType } from "@/types";
 import { Conversation, User, Message } from "@prisma/client";
 import useOtherUser from "@/hooks/use-other-user";
 import Avatar from "./avatar";
+import GroupAvatar from "./group-avatar";
 
 interface ConversationBoxProps {
     conversation: FullConversationType;
@@ -69,7 +70,13 @@ const ConversationBox: FC<ConversationBoxProps> = ({ conversation, selected }) =
                 selected ? "bg-neutral-100" : "bg-white"
             )}
         >
-            <Avatar user={otherUser} />
+            {
+                conversation.isGroup? (
+                    <GroupAvatar users={conversation.users} />
+                ): (
+                    <Avatar user={otherUser} />
+                )
+            }
 
             <div className="min-w-0 flex-1">
                 <div className="focus:outline-none">

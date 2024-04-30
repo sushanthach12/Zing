@@ -1,7 +1,7 @@
 "use client";
 
 import { FC, useCallback, useState } from "react"
-import Modal from "../../../../../components/modal";
+import Modal from "../../../../../components/ui/modal";
 import { useRouter } from "next/navigation";
 import useConversation from "@/hooks/use-conversation";
 import axios, { AxiosError } from "axios";
