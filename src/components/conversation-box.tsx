@@ -51,8 +51,7 @@ const ConversationBox: FC<ConversationBoxProps> = ({ conversation, selected }) =
         if(!userEmail) return false;
 
         return seenArray.filter(user => user.email === userEmail).length !== 0;
-    }, [lastMessage, userEmail]);
-
+    }, [userEmail, lastMessage]);
 
     const lastMessageText = useMemo(() => {
         if (!lastMessage) return "Started a conversation";
@@ -90,7 +89,7 @@ const ConversationBox: FC<ConversationBoxProps> = ({ conversation, selected }) =
                             )
                         }
                     </div>
-                    <p className={clsx("truncate text-sm text-gray-500",
+                    <p className={clsx("truncate text-sm",
                         hasSeen? "text-gray-500": "text-black font-medium"
                     )}>
                         {

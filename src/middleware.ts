@@ -1,5 +1,7 @@
+import { getServerSession } from 'next-auth'
 import { getToken } from 'next-auth/jwt'
 import { withAuth } from 'next-auth/middleware'
+import { getSession } from 'next-auth/react';
 import { NextResponse } from 'next/server'
 
 export default withAuth(
@@ -7,7 +9,7 @@ export default withAuth(
         const pathname = req.nextUrl.pathname
 
         // Manage route protection
-        const isAuth = await getToken({ req })
+        const isAuth = await getToken({ req });
         const isLoginPage = pathname === '/'
 
         const sensitiveRoutes = ['/', '/users', '/conversations']

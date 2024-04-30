@@ -7,6 +7,7 @@ import { FC } from "react"
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import MessageInput from "./message-input";
+import { CldUploadButton } from "next-cloudinary";
 
 interface FormProps { }
 
@@ -41,12 +42,35 @@ const Form: FC<FormProps> = ({ }) => {
         }
     }
 
+
+    const handleUpload = async (result: any) => {
+        try {
+            await axios.post(`/api/messages`, {
+                image: result?.info?.secure_url,
+                conversationId
+            });
+
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                toast.error(error.response?.data);
+            }
+        }
+    }
+
     return (
         <div className="py-4 px-4 bg-white border-t flex items-center gap-2 lg:gap-4 w-full">
-            <LucideImage
-                size={30}
-                className="text-sky-500"
-            />
+
+            <CldUploadButton
+                options={{ maxFiles: 1 }}
+                onUpload={handleUpload}
+                uploadPreset="g2gdb0xc"
+            >
+                <LucideImage
+                    size={30}
+                    className="text-sky-500"
+                />
+            </CldUploadButton>
+
 
             <form
                 onSubmit={handleSubmit(onSubmit)}
