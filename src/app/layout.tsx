@@ -4,6 +4,7 @@ import "./globals.css";
 
 import ToastProvider from "@/components/providers/toast-provider";
 import AuthProvider from "@/components/providers/auth-provider";
+import ActiveStatus from "@/components/active-status";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,6 +26,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <AuthProvider>
           <ToastProvider />
+          <ActiveStatus />
           {children}
         </AuthProvider>
       </body>

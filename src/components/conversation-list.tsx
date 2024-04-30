@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useState } from "react"
+import { FC, useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
 
@@ -10,6 +10,8 @@ import { MdOutlineGroupAdd } from "react-icons/md";
 import ConversationBox from "./conversation-box";
 import GroupChatModal from "./modals/group-chat-modal";
 import { User } from "@prisma/client";
+import { useSession } from "next-auth/react";
+import { pusherClient } from "@/lib/pusher";
 
 interface ConversationListProps {
     initialData: FullConversationType[]
@@ -18,12 +20,63 @@ interface ConversationListProps {
 
 const ConversationList: FC<ConversationListProps> = ({ initialData, users }) => {
 
+    const { data: session } = useSession();
+
     const [data, setData] = useState(initialData);
     const [isModalOpen, setIsModalOpen] = useState(false)
 
     const router = useRouter();
 
     const { conversationId, isOpen } = useConversation();
+
+    const pusherKey = useMemo(() => {
+        return session?.user?.email;
+    }, [session?.user?.email]);
+
+    useEffect(() => {
+        if (!pusherKey) return;
+
+        pusherClient.subscribe(pusherKey);
+
+        const handleNewConversation = (conversation: FullConversationType) => {
+            setData((prev) => {
+                if (prev.find((c) => c.id === conversation.id)) return prev;
+
+                return [conversation, ...prev];
+            });
+        }
+
+        const handleUpdateConversation = (conversation: FullConversationType) => {
+            setData((prev) => prev.map((c) => {
+                if (c.id === conversation.id) {
+                    return {
+                        ...c,
+                        messages: conversation.messages,
+                    };
+                }
+
+                return c;
+            }))
+        }
+
+        const handleDeleteConversation = (conversation: FullConversationType) => {
+            setData((prev) => prev.filter((c) => c.id !== conversation.id));
+
+            if(conversationId === conversation.id) router.replace("/conversations");
+        }
+
+        pusherClient.bind("conversation:new", handleNewConversation);
+        pusherClient.bind("conversation:update", handleUpdateConversation);
+        pusherClient.bind("conversation:delete", handleDeleteConversation);
+
+        return () => {
+            pusherClient.unsubscribe(pusherKey);
+
+            pusherClient.unbind("conversation:new", handleNewConversation);
+            pusherClient.unbind("conversation:update", handleUpdateConversation);
+            pusherClient.unbind("conversation:delete", handleDeleteConversation);
+        }
+    }, [pusherKey, conversationId, router]);
 
     return (
         <>

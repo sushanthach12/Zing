@@ -10,6 +10,7 @@ import useOtherUser from "@/hooks/use-other-user";
 import Avatar from "@/components/avatar";
 import ConfirmModal from "@/app/(routes)/conversations/[conversationId]/_components/confirm-modal";
 import GroupAvatar from "@/components/group-avatar";
+import useActiveList from "@/hooks/use-active-list";
 
 interface ProfileDrawerProps {
     data: Conversation & { users: User[] };
@@ -31,11 +32,14 @@ const ProfileDrawer: FC<ProfileDrawerProps> = ({ data, isOpen, onClose }) => {
         return data.name || otherUser.name;
     }, [data.name, otherUser.name]);
 
+    const { members } = useActiveList();
+    const isActive = members.indexOf(otherUser.email!) !== -1;
+
     const statusText = useMemo(() => {
         if (data.isGroup) return `${data.users.length} members`;
 
-        return "Active";
-    }, [data]);
+        return isActive ? "Online" : "Offline";
+    }, [data, isActive]);
 
     return (
         <>

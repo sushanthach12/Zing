@@ -9,6 +9,7 @@ import { ChevronLeft, MoreHorizontal } from "lucide-react";
 import Avatar from "./avatar";
 import ProfileDrawer from "@/app/(routes)/conversations/[conversationId]/_components/profile-drawer";
 import GroupAvatar from "./group-avatar";
+import useActiveList from "@/hooks/use-active-list";
 
 interface HeaderProps {
     conversation: Conversation & {
@@ -21,11 +22,14 @@ const Header: FC<HeaderProps> = ({ conversation }) => {
     const otherUser = useOtherUser(conversation);
     const [drawerOpen, setDrawerOpen] = useState(false);
 
+    const { members } = useActiveList();
+    const isActive = members.indexOf(otherUser.email!) !== -1;
+
     const statusText = useMemo(() => {
         if (conversation.isGroup) return `${conversation.users.length} members`;
 
-        return "Active";
-    }, [conversation]);
+        return isActive ? "Online" : "Offline";
+    }, [conversation, isActive]);
 
     return (
         <>

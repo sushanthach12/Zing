@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import getCurrentUser from "@/actions/get-current-user";
 import prismadb from "@/lib/prismadb";
+import { pusherServer } from "@/lib/pusher";
 
 export const POST = async (req: Request) => {
     try {
@@ -40,6 +41,12 @@ export const POST = async (req: Request) => {
                 },
                 include: {
                     users: true
+                }
+            });
+
+            newConversation.users.forEach(user => {
+                if(user.email) {
+                    pusherServer.trigger(user.email, "conversation:new", newConversation);
                 }
             });
 
@@ -90,6 +97,12 @@ export const POST = async (req: Request) => {
             },
             include: {
                 users: true
+            }
+        });
+
+        newConversation.users.map(user => {
+            if(user.email) {
+                pusherServer.trigger(user.email, "conversation:new", newConversation);
             }
         });
 

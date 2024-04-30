@@ -33,7 +33,7 @@ const ConversationBox: FC<ConversationBoxProps> = ({ conversation, selected }) =
     const lastMessage = useMemo(() => {
         const messages = conversation.messages;
 
-        return messages[messages.length - 1];
+        return messages && messages[messages.length - 1];
     }, [conversation.messages]);
 
 
