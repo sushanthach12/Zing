@@ -12,6 +12,7 @@ const Home = async () => {
                     width={48}
                     alt="Logo"
                     className="mx-auto w-auto"
+                    loading="eager"
                 />
 
                 <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
