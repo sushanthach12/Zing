@@ -5,9 +5,9 @@ const Home = async () => {
 
     return (
         <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8 bg-gray-100">
-            <div className="sm:mx-auto sm:w-full sm:max-w-md h-12 w-12">
+            <div className="sm:mx-auto sm:w-full sm:max-w-md h-10 w-10">
                 <Image
-                    src={"/images/logo.png"}
+                    src={"/images/placeholder.jpg"}
                     alt="Logo"
                     placeholder="blur"
                     className="mx-auto w-auto"
