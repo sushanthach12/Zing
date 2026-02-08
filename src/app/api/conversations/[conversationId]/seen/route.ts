@@ -1,0 +1,85 @@
+import { NextResponse } from 'next/server';
+
+import getCurrentUser from '@/actions/get-current-user';
+import prismadb from '@/lib/prismadb';
+import { pusherServer } from '@/lib/pusher';
+
+export const POST = async (
+  req: Request,
+  { params }: { params: Promise<{ conversationId: string }> },
+) => {
+  try {
+    const { conversationId } = await params;
+
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser?.id || !currentUser?.email) {
+      return new NextResponse('Unauthorized', { status: 401 });
+    }
+
+    // Find the Existing Conversation
+
+    const conversation = await prismadb.conversation.findUnique({
+      where: {
+        id: conversationId,
+      },
+      include: {
+        messages: {
+          include: {
+            seen: true,
+          },
+        },
+        users: true,
+      },
+    });
+
+    if (!conversation) {
+      return new NextResponse('Invalid ID', { status: 400 });
+    }
+
+    // Find the last message
+    const lastMessage = conversation.messages[conversation.messages.length - 1];
+
+    if (!lastMessage) {
+      return NextResponse.json(conversation);
+    }
+
+    // Update the seen list
+
+    const updatedMessage = await prismadb.message.update({
+      where: {
+        id: lastMessage.id,
+      },
+      include: {
+        seen: true,
+        sender: true,
+      },
+      data: {
+        seen: {
+          connect: {
+            id: currentUser.id,
+          },
+        },
+      },
+    });
+
+    await pusherServer.trigger(currentUser.email, 'conversation:update', {
+      id: conversationId,
+      messages: [updatedMessage],
+    });
+
+    if (lastMessage.seenIds.indexOf(currentUser.id) !== -1) {
+      return NextResponse.json(conversation);
+    }
+
+    await pusherServer.trigger(
+      conversationId,
+      'message:update',
+      updatedMessage,
+    );
+
+    return NextResponse.json(updatedMessage);
+  } catch (error) {
+    return new NextResponse('Internal Server Error', { status: 500 });
+  }
+};
